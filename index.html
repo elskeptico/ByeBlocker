@@ -142,29 +142,34 @@
     cursor: pointer;
   `;
   button.onclick = function() {
-    var link = prompt("Url?");
-    var proxy = 'https://api.codetabs.com/v1/proxy?quest=';
-    fetch(proxy + link)
-      .then((response) => response.text())
-      .then((text) => document.write(text));
-    var all = document.getElementsByTagName("*");
-    for (var i = 0, max = all.length; i < max; i++) {
-      if (all[i].src) {
-        all[i].src = new URL(all[i].src, link).href;
-        all[i].src = proxy + all[i].src;
-      }
-    }
-    window.onbeforeunload = function(e) {
-      e.preventDefault();
-      alert(e.toString());
-    };
-    function locationHashChanged(e) {
-      e.preventDefault();
-      alert(e);
-      window.location = new URL(e.oldURL, e.newURL).href;
-    }
-    window.onhashchange = locationHashChanged;
-  };
+  var link = prompt("Url?");
+  var proxy = 'https://api.codetabs.com/v1/proxy?quest=';
+
+  fetch(proxy + link)
+    .then((response) => response.text())
+    .then((text) => {
+      document.open();
+      document.write(text);
+      document.close();
+
+      // FIX ALL LINKS AFTER PAGE LOADS
+      setTimeout(() => {
+        var all = document.querySelectorAll("*");
+
+        all.forEach(el => {
+          // Fix images, scripts, etc.
+          if (el.src) {
+            el.src = proxy + new URL(el.src, link).href;
+          }
+
+          // 🔥 THIS IS THE IMPORTANT PART (fix links)
+          if (el.href) {
+            el.href = proxy + new URL(el.href, link).href;
+          }
+        });
+      }, 100);
+    });
+  };  
 
   menuContent.appendChild(button);
   menuContent.appendChild(closeButton);
