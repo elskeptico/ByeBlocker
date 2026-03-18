@@ -159,10 +159,10 @@
         all.forEach(el => {
           // Fix images, scripts, etc.
           if (el.src) {
-            el.src = proxy + new URL(el.src, link).href;
+            el.src = proxy + new URL(el.src, link).src;
           }
 
-          // 🔥 THIS IS THE IMPORTANT PART (fix links)
+          // THIS IS THE IMPORTANT PART (fix links)
           if (el.href) {
             el.href = proxy + new URL(el.href, link).href;
           }
